@@ -44,10 +44,11 @@ pos = mc.player.getTilePos()
 # STEP 5 - Build The Board
 # We want the game to appear just in front of the player's location.
 # You can make the game board out of whatever block material you want, google for a full list of names.
+# Choose two materials, one for "good" blocks, and one for "bad". I've chosen COBBLESTONE and MOSS_STONE. 
 
 mc.setBlocks(pos.x - 1, pos.y, pos.z + 3,
              pos.x + 1, pos.y + 2, pos.z + 3,
-             block.STONE.id)
+             block.COBBLESTONE.id)
 
 
 
@@ -72,55 +73,92 @@ mc.postToChat("Go")
 
 # STEP 7 - Set Up Variables
 # We need to keep track of a few bits of information, so we will create variables for each of them.
-# We need to know how many blocks are currently lit (blocksLit) and what score the player has got (points)
+# We need to know how many blocks are currently bad (blocksBad) and what score the player has got (points)
 
-blocksLit = 0
+blocksBad = 0
 points = 0
 
 
 
-#loop until game over (when all the lights are lit)
-while blocksLit < 9:
+# STEP 8 - Loop
+# Set up a While Loop that will keep running until all the lights are bad (Hint: use blocksBad < 9)
+# Remember to indent all code inside the loop
+while blocksBad < 9:
 
-    #sleep for a small amount of time
-    time.sleep(0.2)
 
-    #turn off any lights which have been hit
+  
+  
+# STEP 9 - Hit Blocks
+# You now need need to turn off any blocks that have turned bad.
+# Most of the code for this section has been given, but make sure you understand most of it and make any needed alterations before moving on.
+
+    # poll a list of block hits, then use for to loop through each hitBlock:
     for hitBlock in mc.events.pollBlockHits():
-        #was the block hit glowstone
-        if mc.getBlock(hitBlock.pos.x, hitBlock.pos.y, hitBlock.pos.z) == block.GLOWSTONE_BLOCK.id:
-            #if it was, turn it back to STONE
-            mc.setBlock(hitBlock.pos.x, hitBlock.pos.y, hitBlock.pos.z, block.STONE.id)
-            #reduce the number of lights lit
-            blocksLit = blocksLit - 1
-            #increase the points
+      
+        # check if the the block in that location was bad 
+        if mc.getBlock(hitBlock.pos.x, hitBlock.pos.y, hitBlock.pos.z) == block.MOSS_STONE.id:
+          
+            # if it was, set that location back to a good block
+            mc.setBlock(hitBlock.pos.x, hitBlock.pos.y, hitBlock.pos.z, block.COBBLESTONE.id)
+            
+            
+            # Add some code to increase score and lower the blocksBad count:
+            
+            blocksBad = blocksBad - 1
             points = points + 1 
 
-    #increase the number of lights lit
-    blocksLit = blocksLit + 1
-    #create the next light
-    lightCreated = False
-    while not lightCreated:
-        xPos = pos.x + random.randint(-1,1)
-        yPos = pos.y + random.randint(0,2)
-        zPos = pos.z + 3
+            
+            
+            
 
-        #if the block is already glowstone, return to the top and try again
-        # otherwise set it to the 
-        if mc.getBlock(xPos, yPos, zPos) == block.STONE.id:
-            #set the block to glowstone
-            mc.setBlock(xPos, yPos, zPos, block.GLOWSTONE_BLOCK.id)
-            lightCreated = True
-            #debug
-            #print "light created x{} y{} z{}".format(xPos, yPos, zPos)
+    # STEP 10 - Turn a Block Bad
+    # Select a random block as our next bad block by choosing random coordinates:
+    xPos = pos.x + random.randint(-1,1)
+    yPos = pos.y + random.randint(0,2)
+    zPos = pos.z + 3
+    
+    # Use setBlock to make the block at those coordinates into the bad material:
+    mc.setBlock(xPos, yPos, zPos, block.MOSS_STONE.id)
+    
+    
+    # increase the blocksBad count:
+    blocksBad = blocksBad + 1
 
-#display the points scored to the player
+    
+    
+            
+    # STEP 11 - Wait
+    # At the end of the loop, make the game pause for a second before changing the next block.
+    # Use time.sleep(seconds) like before. 0.2 is roughly the right amount, but experiment.
+
+    time.sleep(0.2)
+            
+    
+    
+    
+    
+# STEP 12 - Gameover
+# Because the loop has ended (we aren't indenting any more), we know that all of the blocks went bad.
+# Display a message to the player, including points scored.
+
 mc.postToChat("Game Over - points = " + str(points))
+
+
+
+
+
+
+
+
+
+
 
 
 # WHAT NEXT?
 # Think about what cool extra features you might want to add to your game. 
 # Here are a few ideas:
+
+# Add a message to the loop so that the player can see their score 
 
 # The difficulty of the game is set by the waiting before changing another block, currently time.sleep(0.2)
 # Inceasing this time will make it easier, decreasing will make it harder.
